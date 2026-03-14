@@ -1,0 +1,197 @@
+/* ── Reset & base ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  min-height: 100vh;
+  color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px 40px;
+}
+
+#app {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+header { text-align: center; }
+h1 { font-size: 2.4rem; letter-spacing: 2px; color: #e2b96f; }
+.subtitle { color: #aaa; margin-top: 4px; }
+
+/* ── Instructions ─────────────────────────────────────────── */
+#instructions {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+#instructions ul { margin-top: 6px; padding-left: 18px; }
+
+/* ── Game area layout ─────────────────────────────────────── */
+#game-area {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+/* ── Board (past guesses) ─────────────────────────────────── */
+#board {
+  flex: 1;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+}
+
+.board-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.board-row .turn-number {
+  width: 20px;
+  font-size: 0.75rem;
+  color: #666;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.board-row .pegs {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+}
+
+/* ── Feedback pegs ────────────────────────────────────────── */
+.feedback {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  width: 44px;
+  flex-shrink: 0;
+}
+
+.feedback-peg {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #333;
+  border: 1px solid #555;
+}
+.feedback-peg.black { background: #111; border-color: #aaa; box-shadow: 0 0 4px rgba(0,0,0,0.8); }
+.feedback-peg.white { background: #f0f0f0; border-color: #bbb; }
+
+/* ── Color pegs (shared between board and current row) ───── */
+.peg, .slot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: #2a2a4a;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.peg.filled { border-color: rgba(255,255,255,0.5); }
+
+/* ── Controls (right panel) ───────────────────────────────── */
+#controls {
+  width: 160px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Color palette ────────────────────────────────────────── */
+#color-palette {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.palette-color {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+.palette-color:hover { transform: scale(1.12); }
+.palette-color.selected {
+  border-color: #fff;
+  box-shadow: 0 0 10px rgba(255,255,255,0.6);
+  transform: scale(1.12);
+}
+
+/* ── Current guess row ────────────────────────────────────── */
+#current-guess { display: flex; flex-direction: column; gap: 10px; }
+
+.guess-slots {
+  display: flex;
+  gap: 6px;
+}
+
+.slot {
+  cursor: pointer;
+  background: #1e1e3a;
+  border: 2px dashed rgba(255,255,255,0.25);
+}
+.slot.filled {
+  border-style: solid;
+  border-color: rgba(255,255,255,0.5);
+}
+.slot:hover { transform: scale(1.08); }
+
+.guess-actions { display: flex; flex-direction: column; gap: 6px; }
+
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+button:disabled { opacity: 0.35; cursor: not-allowed; }
+button:not(:disabled):active { transform: scale(0.96); }
+
+#btn-guess  { background: #e2b96f; color: #1a1a2e; }
+#btn-clear  { background: rgba(255,255,255,0.1); color: #ddd; }
+#btn-new-game {
+  background: #0f3460;
+  color: #e2b96f;
+  border: 1px solid #e2b96f;
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 10px;
+  align-self: center;
+  width: 180px;
+}
+#btn-new-game:hover { background: #16426e; }
+
+/* ── Message overlay ──────────────────────────────────────── */
+#message {
+  text-align: center;
+  padding: 18px 22px;
+  border-radius: 14px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+#message.win  { background: rgba(50,200,100,0.2); border: 1px solid #32c864; color: #7ef7a8; }
+#message.lose { background: rgba(220,50,50,0.2);  border: 1px solid #dc3232; color: #ff8888; }
+.hidden { display: none !important; }

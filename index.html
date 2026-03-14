@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mastermind – Logic Game</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>🔐 Mastermind</h1>
+      <p class="subtitle">Crack the secret 4-color code in 10 tries!</p>
+    </header>
+
+    <div id="instructions">
+      <strong>How to play:</strong>
+      Pick a color from the palette, fill all 4 slots, then hit
+      <em>Guess</em>.
+      <ul>
+        <li>🖤 Black peg – right color, right position</li>
+        <li>⚪ White peg – right color, wrong position</li>
+      </ul>
+    </div>
+
+    <div id="game-area">
+      <div id="board"></div>
+
+      <div id="controls">
+        <div id="color-palette"></div>
+        <div id="current-guess">
+          <div class="guess-slots">
+            <div class="slot" data-index="0"></div>
+            <div class="slot" data-index="1"></div>
+            <div class="slot" data-index="2"></div>
+            <div class="slot" data-index="3"></div>
+          </div>
+          <div class="guess-actions">
+            <button id="btn-guess" disabled>Guess</button>
+            <button id="btn-clear">Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="message" class="hidden"></div>
+
+    <button id="btn-new-game">New Game</button>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
