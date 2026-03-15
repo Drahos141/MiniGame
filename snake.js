@@ -30,7 +30,8 @@ function startSnake() {
   document.getElementById('btn-start-snake').textContent = 'Restart';
   clearInterval(gameLoop);
   initSnake();
-  gameActive = true; = () => Math.max(80, 200 - (level - 1) * 20);
+  gameActive = true;
+  const speed = () => Math.max(80, 200 - (level - 1) * 20);
   const tick = () => {
     if (!gameActive) return;
     update();
