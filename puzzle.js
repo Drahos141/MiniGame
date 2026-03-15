@@ -81,7 +81,6 @@ function render() {
       if (val === GOAL[idx]) tile.classList.add('correct');
       tile.innerHTML = `<span>${TILE_EMOJIS[val - 1]}</span><span class="tile-num">${val}</span>`;
       tile.addEventListener('click', () => handleTileClick(idx));
-      tile.addEventListener('touchend', e => { e.preventDefault(); handleTileClick(idx); }, { passive: false });
     }
     grid.appendChild(tile);
   });

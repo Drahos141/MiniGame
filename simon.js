@@ -122,7 +122,6 @@ document.querySelectorAll('.simon-btn').forEach(btn => {
         // Cycle to next player for the same sequence, then next round after all have gone
         let next = (mpCurrentPlayer + 1) % playerCount;
         while (mpEliminated[next] && next !== mpCurrentPlayer) next = (next + 1) % playerCount;
-        const allWent = next === 0 || (mpCurrentPlayer === playerCount - 1 && next === 0);
         if (next <= mpCurrentPlayer && !mpEliminated[0]) {
           // Full rotation done → next round
           mpCurrentPlayer = 0;

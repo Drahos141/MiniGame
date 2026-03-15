@@ -196,7 +196,7 @@ function canMoveTo(fromR, fromC, toR, toC) {
 
 function canAttack(fromR, fromC, toR, toC) {
   const unit = map[fromR][fromC].unit;
-  const range = unit.range || 1;
+  const range = unit.range ?? 1;
   return distanceTo(fromR, fromC, toR, toC) <= range;
 }
 

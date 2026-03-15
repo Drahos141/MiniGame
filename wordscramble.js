@@ -213,7 +213,7 @@ function endGame() {
     let maxScore = -1, winner = -1;
     playerScores.forEach((s, i) => { if (s > maxScore) { maxScore = s; winner = i; } });
     let text = `🏆 Quest Complete!\n`;
-    playerScores.forEach((s, i) => { text += `P${i + 1}: ${s} pts  `; });
+    text += playerScores.map((s, i) => `P${i + 1}: ${s} pts`).join('  ') + '\n';
     text += `\n🥇 Winner: P${winner + 1} with ${maxScore} pts!`;
     msg.textContent = text;
     msg.style.whiteSpace = 'pre-line';

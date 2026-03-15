@@ -195,7 +195,7 @@ function endMultiplayerGame() {
     // Winner = solved with fewest turns
     let bestTurns = Infinity, winner = -1;
     solvedPlayers.forEach(i => { if (mpTurnsUsed[i] < bestTurns) { bestTurns = mpTurnsUsed[i]; winner = i; } });
-    const scoreStr = mpTurnsUsed.map((t, i) => `P${i+1}:${mpSolved[i] ? t+'tries' : 'failed'}`).join(' | ');
+    const scoreStr = mpTurnsUsed.map((t, i) => `P${i+1}:${mpSolved[i] ? t+' tries' : 'failed'}`).join(' | ');
     msg.textContent = `🏆 P${winner+1} wins! ${scoreStr}`;
     msg.style.color = '#2ecc71';
   }
