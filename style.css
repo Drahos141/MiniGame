@@ -1,0 +1,712 @@
+/* ===================== RESET & BASE ===================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  min-height: 100vh;
+  color: #e0e0e0;
+}
+
+#app {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header { text-align: center; margin-bottom: 28px; }
+
+h1 {
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, #e2b96f, #f9d98b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  color: #aaa;
+  margin-top: 6px;
+  font-size: 1rem;
+}
+
+.btn-back {
+  display: inline-block;
+  margin-bottom: 18px;
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: #ccc;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+.btn-back:hover { background: rgba(255,255,255,0.2); }
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: transform 0.1s, opacity 0.1s;
+}
+button:active { transform: scale(0.97); }
+
+.hidden { display: none !important; }
+
+/* ===================== SHARED STATS ===================== */
+.stat-box {
+  background: rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 10px 18px;
+  text-align: center;
+  min-width: 80px;
+}
+.stat-label { display: block; font-size: 0.72rem; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; }
+.stat-value { display: block; font-size: 1.5rem; font-weight: 700; color: #e2b96f; }
+
+/* ===================== MESSAGES ===================== */
+#message, #memory-message, #simon-message, #mole-message,
+#snake-message, #ttt-message, #physics-message {
+  margin-top: 18px;
+  padding: 18px 24px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  animation: fadeIn 0.4s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===================== DASHBOARD ===================== */
+.dashboard { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+.section-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #aaa;
+  margin-bottom: 14px;
+  padding-left: 4px;
+}
+
+.game-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 18px;
+  margin-bottom: 32px;
+}
+
+.game-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 24px 20px;
+  text-decoration: none;
+  color: #e0e0e0;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+  background: rgba(255,255,255,0.09);
+}
+.card-icon { font-size: 2.4rem; }
+.card-title { font-size: 1.15rem; font-weight: 700; }
+.card-desc { font-size: 0.85rem; color: #aaa; line-height: 1.5; flex: 1; }
+.btn-play {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 8px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.mastermind-card .btn-play { background: rgba(226,185,111,0.2); color: #e2b96f; }
+.memory-card    .btn-play { background: rgba(26,188,156,0.2);  color: #1abc9c; }
+.simon-card     .btn-play { background: rgba(155,89,182,0.2);  color: #9b59b6; }
+.ttt-card       .btn-play { background: rgba(52,152,219,0.2);  color: #3498db; }
+.snake-card     .btn-play { background: rgba(39,174,96,0.2);   color: #27ae60; }
+.mole-card      .btn-play { background: rgba(231,76,60,0.2);   color: #e74c3c; }
+
+.section-divider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin: 10px 0 28px;
+}
+
+.advanced-section {}
+
+.physics-card {
+  background: linear-gradient(135deg, rgba(30,20,50,0.8), rgba(40,30,70,0.8));
+  border: 1px solid rgba(180,120,255,0.25);
+}
+.physics-card:hover {
+  box-shadow: 0 12px 32px rgba(120,60,200,0.3);
+  border-color: rgba(180,120,255,0.5);
+}
+.physics-card .btn-play { background: rgba(155,89,182,0.3); color: #c39bd3; }
+
+/* ===================== MASTERMIND ===================== */
+#instructions {
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 0.88rem;
+  color: #aaa;
+  margin-bottom: 20px;
+  line-height: 1.7;
+}
+#instructions ul { margin-top: 6px; padding-left: 20px; }
+
+#game-area {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#board {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 6px;
+  min-width: 200px;
+}
+
+.board-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.board-guess {
+  display: flex;
+  gap: 6px;
+}
+
+.board-peg {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+}
+
+.board-feedback {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  margin-left: 4px;
+}
+.feedback-peg {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+}
+.feedback-peg.black { background: #111; border: 1px solid #555; }
+.feedback-peg.white { background: #eee; border: 1px solid #aaa; }
+
+#controls { display: flex; flex-direction: column; gap: 16px; }
+
+#color-palette {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.color-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.color-btn:hover  { transform: scale(1.15); }
+.color-btn.active { border-color: #fff; transform: scale(1.15); }
+
+.guess-slots { display: flex; gap: 8px; margin-bottom: 10px; }
+.slot {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 2px dashed rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.05);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.slot:hover { background: rgba(255,255,255,0.1); }
+
+.guess-actions { display: flex; gap: 8px; }
+#btn-guess {
+  padding: 8px 18px;
+  background: #e2b96f;
+  color: #1a1a2e;
+  font-weight: 700;
+}
+#btn-guess:disabled { opacity: 0.4; cursor: not-allowed; }
+#btn-clear, #btn-new-game {
+  padding: 8px 14px;
+  background: rgba(255,255,255,0.1);
+  color: #ccc;
+}
+#btn-new-game { display: block; margin: 20px auto 0; padding: 10px 28px; }
+
+#message {
+  background: rgba(226,185,111,0.15);
+  border: 1px solid rgba(226,185,111,0.3);
+  color: #e2b96f;
+}
+
+/* ===================== MEMORY MATCH ===================== */
+.memory-app #app { max-width: 560px; }
+
+#memory-stats {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+#memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.memory-card {
+  aspect-ratio: 1;
+  perspective: 600px;
+  cursor: pointer;
+}
+.memory-card-inner {
+  width: 100%; height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.4s;
+  border-radius: 10px;
+}
+.memory-card.flipped .memory-card-inner { transform: rotateY(180deg); }
+.memory-card-front, .memory-card-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.memory-card-front {
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  border: 2px solid rgba(255,255,255,0.1);
+  font-size: 1.4rem;
+  color: rgba(255,255,255,0.2);
+}
+.memory-card-back {
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(26,188,156,0.4);
+  transform: rotateY(180deg);
+  font-size: 2rem;
+}
+.memory-card.matched .memory-card-back {
+  background: rgba(26,188,156,0.15);
+  border-color: #1abc9c;
+}
+
+#memory-message {
+  background: rgba(26,188,156,0.15);
+  border: 1px solid rgba(26,188,156,0.3);
+  color: #1abc9c;
+}
+
+#btn-new-memory {
+  display: block;
+  margin: 20px auto 0;
+  padding: 10px 28px;
+  background: rgba(26,188,156,0.2);
+  color: #1abc9c;
+  font-weight: 700;
+}
+
+/* ===================== SIMON SAYS ===================== */
+.simon-app #app { max-width: 480px; }
+
+#simon-level-display {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #aaa;
+  margin-bottom: 16px;
+}
+#level-num { font-weight: 700; color: #9b59b6; font-size: 1.3rem; }
+
+#simon-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  max-width: 300px;
+  margin: 0 auto 20px;
+}
+
+.simon-btn {
+  aspect-ratio: 1;
+  border-radius: 16px;
+  border: 3px solid rgba(255,255,255,0.1);
+  opacity: 0.5;
+  transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+.simon-btn[data-color="red"]    { background: #e74c3c; }
+.simon-btn[data-color="green"]  { background: #2ecc71; }
+.simon-btn[data-color="blue"]   { background: #3498db; }
+.simon-btn[data-color="yellow"] { background: #f1c40f; }
+.simon-btn:not(:disabled):hover { opacity: 0.75; transform: scale(1.03); }
+.simon-btn.active {
+  opacity: 1 !important;
+  box-shadow: 0 0 28px 6px currentColor;
+  transform: scale(1.05);
+}
+
+#simon-status {
+  text-align: center;
+  font-size: 1rem;
+  color: #aaa;
+  margin-bottom: 14px;
+  min-height: 28px;
+}
+
+#btn-start-simon {
+  display: block;
+  margin: 0 auto;
+  padding: 10px 32px;
+  background: rgba(155,89,182,0.3);
+  color: #9b59b6;
+  font-weight: 700;
+  border: 1px solid rgba(155,89,182,0.4);
+}
+#btn-start-simon:hover { background: rgba(155,89,182,0.5); }
+
+#simon-message {
+  background: rgba(155,89,182,0.15);
+  border: 1px solid rgba(155,89,182,0.3);
+  color: #9b59b6;
+}
+
+/* ===================== TIC-TAC-TOE ===================== */
+.ttt-app #app { max-width: 500px; }
+
+#ttt-mode {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.mode-btn {
+  padding: 8px 20px;
+  background: rgba(255,255,255,0.08);
+  color: #ccc;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.mode-btn.active {
+  background: rgba(52,152,219,0.25);
+  color: #3498db;
+  border-color: rgba(52,152,219,0.4);
+}
+
+#ttt-status {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #aaa;
+  margin-bottom: 14px;
+  min-height: 28px;
+  font-weight: 500;
+}
+.ttt-status-end { color: #e2b96f !important; font-size: 1.2rem !important; }
+
+#ttt-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  max-width: 300px;
+  margin: 0 auto 20px;
+}
+.ttt-cell {
+  aspect-ratio: 1;
+  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.8rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  user-select: none;
+}
+.ttt-cell:hover:not(.filled) { background: rgba(255,255,255,0.12); }
+.ttt-cell.x-cell { color: #3498db; }
+.ttt-cell.o-cell { color: #e74c3c; }
+.ttt-cell.winner-cell {
+  background: rgba(226,185,111,0.2);
+  border-color: #e2b96f;
+  animation: pulse 0.5s ease infinite alternate;
+}
+@keyframes pulse { from { box-shadow: 0 0 0px rgba(226,185,111,0.5); } to { box-shadow: 0 0 16px rgba(226,185,111,0.8); } }
+
+#ttt-score {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.score-box {
+  background: rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 10px 18px;
+  text-align: center;
+  min-width: 80px;
+}
+.score-label { display: block; font-size: 0.72rem; color: #aaa; text-transform: uppercase; }
+.score-val { display: block; font-size: 1.5rem; font-weight: 700; color: #3498db; }
+
+#btn-new-ttt {
+  display: block;
+  margin: 0 auto;
+  padding: 10px 28px;
+  background: rgba(52,152,219,0.2);
+  color: #3498db;
+  font-weight: 700;
+}
+
+/* ===================== SNAKE ===================== */
+.snake-app #app { max-width: 520px; }
+
+#snake-hud {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+#snake-canvas {
+  display: block;
+  margin: 0 auto;
+  border-radius: 12px;
+  border: 2px solid rgba(39,174,96,0.3);
+  background: #0a1628;
+  max-width: 100%;
+}
+
+#snake-controls {
+  text-align: center;
+  margin-top: 14px;
+}
+.control-hint {
+  font-size: 0.82rem;
+  color: #888;
+  margin-bottom: 10px;
+}
+#btn-start-snake {
+  padding: 10px 28px;
+  background: rgba(39,174,96,0.2);
+  color: #27ae60;
+  font-weight: 700;
+  border: 1px solid rgba(39,174,96,0.3);
+}
+#btn-start-snake:hover { background: rgba(39,174,96,0.4); }
+
+#snake-message {
+  background: rgba(39,174,96,0.15);
+  border: 1px solid rgba(39,174,96,0.3);
+  color: #27ae60;
+}
+
+/* ===================== WHACK-A-MOLE ===================== */
+.mole-app #app { max-width: 560px; }
+
+#mole-stats {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+#mole-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  max-width: 420px;
+  margin: 0 auto 20px;
+}
+
+.mole-hole {
+  aspect-ratio: 1;
+  background: #0d1b2a;
+  border-radius: 50%;
+  border: 3px solid #1a3350;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+}
+.mole {
+  position: absolute;
+  bottom: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2.8rem;
+  transition: bottom 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+}
+.mole-hole.active .mole {
+  bottom: 10%;
+}
+.mole-hole.whacked .mole {
+  filter: brightness(0.4) sepia(1) hue-rotate(300deg);
+}
+.mole-hole:hover { border-color: #e74c3c; }
+
+#btn-start-mole {
+  display: block;
+  margin: 0 auto 14px;
+  padding: 10px 28px;
+  background: rgba(231,76,60,0.2);
+  color: #e74c3c;
+  font-weight: 700;
+  border: 1px solid rgba(231,76,60,0.3);
+}
+#btn-start-mole:hover { background: rgba(231,76,60,0.4); }
+
+#mole-message {
+  background: rgba(231,76,60,0.15);
+  border: 1px solid rgba(231,76,60,0.3);
+  color: #e74c3c;
+}
+
+/* ===================== PHYSICS LAB ===================== */
+.physics-app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.physics-app #app {
+  max-width: 1100px;
+  padding: 14px 16px;
+}
+
+#physics-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+#physics-toolbar h1 { flex: 1; margin: 0; font-size: 1.5rem; }
+.phys-btn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+}
+#btn-play-physics {
+  background: rgba(39,174,96,0.25);
+  color: #27ae60;
+  border-color: rgba(39,174,96,0.4);
+}
+#btn-play-physics.playing {
+  background: rgba(231,76,60,0.25);
+  color: #e74c3c;
+  border-color: rgba(231,76,60,0.4);
+}
+#btn-clear-physics {
+  background: rgba(255,255,255,0.08);
+  color: #aaa;
+}
+#btn-erase-physics {
+  background: rgba(255,255,255,0.08);
+  color: #aaa;
+}
+#btn-erase-physics.active {
+  background: rgba(231,76,60,0.2);
+  color: #e74c3c;
+  border-color: rgba(231,76,60,0.3);
+}
+
+#physics-container {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+#object-palette {
+  width: 180px;
+  flex-shrink: 0;
+  background: rgba(0,0,0,0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 10px 8px;
+  max-height: 560px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.2) transparent;
+}
+#object-palette::-webkit-scrollbar { width: 5px; }
+#object-palette::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+
+.palette-category { margin-bottom: 14px; }
+.palette-cat-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #888;
+  margin-bottom: 6px;
+  padding: 0 4px;
+}
+.palette-items { display: flex; flex-direction: column; gap: 3px; }
+.palette-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #ccc;
+  border: 1px solid transparent;
+  transition: background 0.15s;
+  user-select: none;
+}
+.palette-item:hover { background: rgba(255,255,255,0.08); }
+.palette-item.selected {
+  background: rgba(155,89,182,0.25);
+  border-color: rgba(155,89,182,0.4);
+  color: #c39bd3;
+}
+.palette-item .pi-icon { font-size: 1.2rem; width: 24px; text-align: center; flex-shrink: 0; }
+.palette-item .pi-name { font-size: 0.78rem; line-height: 1.2; }
+
+#physics-canvas {
+  flex: 1;
+  display: block;
+  border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.1);
+  background: #08111e;
+  cursor: crosshair;
+  max-width: 100%;
+}
+
+#physics-status {
+  margin-top: 10px;
+  font-size: 0.82rem;
+  color: #888;
+  text-align: center;
+}
