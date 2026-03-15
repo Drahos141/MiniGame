@@ -168,7 +168,11 @@ function submitGuess() {
 
 function switchToNextPlayer() {
   let next = (mpCurrentPlayer + 1) % playerCount;
-  while (!mpActive[next] && next !== mpCurrentPlayer) next = (next + 1) % playerCount;
+  let checked = 0;
+  while (!mpActive[next] && next !== mpCurrentPlayer && checked < playerCount) {
+    next = (next + 1) % playerCount;
+    checked++;
+  }
   if (!mpActive[next]) { endMultiplayerGame(); return; }
   mpCurrentPlayer = next;
   turnNumber = mpTurnsUsed[mpCurrentPlayer];

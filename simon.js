@@ -121,7 +121,15 @@ document.querySelectorAll('.simon-btn').forEach(btn => {
       if (playerCount > 1) {
         // Cycle to next player for the same sequence, then next round after all have gone
         let next = (mpCurrentPlayer + 1) % playerCount;
-        while (mpEliminated[next] && next !== mpCurrentPlayer) next = (next + 1) % playerCount;
+        let checked = 0;
+        while (mpEliminated[next] && next !== mpCurrentPlayer && checked < playerCount) {
+          next = (next + 1) % playerCount;
+          checked++;
+        }
+        // If all others are eliminated, end game
+        if (mpEliminated[next] && next === mpCurrentPlayer) {
+          endGame(); return;
+        }
         if (next <= mpCurrentPlayer && !mpEliminated[0]) {
           // Full rotation done → next round
           mpCurrentPlayer = 0;
