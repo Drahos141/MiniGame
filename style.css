@@ -1,0 +1,469 @@
+/* ── Reset & base ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  min-height: 100vh;
+  color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px 40px;
+}
+
+#app {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+header { text-align: center; }
+h1 { font-size: 2.4rem; letter-spacing: 2px; color: #e2b96f; }
+.subtitle { color: #aaa; margin-top: 4px; }
+
+/* ── Instructions ─────────────────────────────────────────── */
+#instructions {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+#instructions ul { margin-top: 6px; padding-left: 18px; }
+
+/* ── Game area layout ─────────────────────────────────────── */
+#game-area {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+/* ── Board (past guesses) ─────────────────────────────────── */
+#board {
+  flex: 1;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+}
+
+.board-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.board-row .turn-number {
+  width: 20px;
+  font-size: 0.75rem;
+  color: #666;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.board-row .pegs {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+}
+
+/* ── Feedback pegs ────────────────────────────────────────── */
+.feedback {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  width: 44px;
+  flex-shrink: 0;
+}
+
+.feedback-peg {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #333;
+  border: 1px solid #555;
+}
+.feedback-peg.black { background: #111; border-color: #aaa; box-shadow: 0 0 4px rgba(0,0,0,0.8); }
+.feedback-peg.white { background: #f0f0f0; border-color: #bbb; }
+
+/* ── Color pegs (shared between board and current row) ───── */
+.peg, .slot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: #2a2a4a;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.peg.filled { border-color: rgba(255,255,255,0.5); }
+
+/* ── Controls (right panel) ───────────────────────────────── */
+#controls {
+  width: 160px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Color palette ────────────────────────────────────────── */
+#color-palette {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.palette-color {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+.palette-color:hover { transform: scale(1.12); }
+.palette-color.selected {
+  border-color: #fff;
+  box-shadow: 0 0 10px rgba(255,255,255,0.6);
+  transform: scale(1.12);
+}
+
+/* ── Current guess row ────────────────────────────────────── */
+#current-guess { display: flex; flex-direction: column; gap: 10px; }
+
+.guess-slots {
+  display: flex;
+  gap: 6px;
+}
+
+.slot {
+  cursor: pointer;
+  background: #1e1e3a;
+  border: 2px dashed rgba(255,255,255,0.25);
+}
+.slot.filled {
+  border-style: solid;
+  border-color: rgba(255,255,255,0.5);
+}
+.slot:hover { transform: scale(1.08); }
+
+.guess-actions { display: flex; flex-direction: column; gap: 6px; }
+
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+button:disabled { opacity: 0.35; cursor: not-allowed; }
+button:not(:disabled):active { transform: scale(0.96); }
+
+#btn-guess  { background: #e2b96f; color: #1a1a2e; }
+#btn-clear  { background: rgba(255,255,255,0.1); color: #ddd; }
+#btn-new-game {
+  background: #0f3460;
+  color: #e2b96f;
+  border: 1px solid #e2b96f;
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 10px;
+  align-self: center;
+  width: 180px;
+}
+#btn-new-game:hover { background: #16426e; }
+
+/* ── Message overlay ──────────────────────────────────────── */
+#message {
+  text-align: center;
+  padding: 18px 22px;
+  border-radius: 14px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+#message.win  { background: rgba(50,200,100,0.2); border: 1px solid #32c864; color: #7ef7a8; }
+#message.lose { background: rgba(220,50,50,0.2);  border: 1px solid #dc3232; color: #ff8888; }
+.hidden { display: none !important; }
+
+/* ════════════════════════════════════════════════════════════
+   SHARED – Back button (appears on every game page)
+   ════════════════════════════════════════════════════════════ */
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 8px;
+  color: #bbb;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  align-self: flex-start;
+}
+.btn-back:hover { background: rgba(255,255,255,0.14); color: #fff; }
+
+/* ════════════════════════════════════════════════════════════
+   DASHBOARD
+   ════════════════════════════════════════════════════════════ */
+#app.dashboard {
+  max-width: 860px;
+  gap: 32px;
+}
+
+.dashboard header { text-align: center; }
+.dashboard h1     { font-size: 2.8rem; }
+
+.game-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 22px;
+}
+
+.game-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 30px 22px 24px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 18px;
+  text-decoration: none;
+  color: #e0e0e0;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.game-card:hover {
+  transform: translateY(-6px);
+}
+
+/* Per-game accent colours */
+.mastermind-card:hover { border-color: #e2b96f; box-shadow: 0 8px 32px rgba(226,185,111,0.25); }
+.memory-card:hover     { border-color: #1abc9c; box-shadow: 0 8px 32px rgba(26,188,156,0.25); }
+.simon-card:hover      { border-color: #9b59b6; box-shadow: 0 8px 32px rgba(155,89,182,0.25); }
+
+.card-icon  { font-size: 3.5rem; line-height: 1; }
+.card-title { font-size: 1.3rem; font-weight: 700; letter-spacing: 0.5px; color: #fff; }
+.card-desc  { font-size: 0.85rem; color: #aaa; text-align: center; line-height: 1.55; flex: 1; }
+
+.btn-play {
+  margin-top: 6px;
+  padding: 9px 22px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  width: 100%;
+  text-align: center;
+  transition: opacity 0.15s;
+}
+.mastermind-card .btn-play { background: #e2b96f; color: #1a1a2e; }
+.memory-card     .btn-play { background: #1abc9c; color: #0e2a25; }
+.simon-card      .btn-play { background: #9b59b6; color: #1a0d2e; }
+.game-card:hover .btn-play { opacity: 0.88; }
+
+/* ════════════════════════════════════════════════════════════
+   MEMORY MATCH
+   ════════════════════════════════════════════════════════════ */
+#app.memory-app { max-width: 560px; }
+
+/* ── Stats row ── */
+#memory-stats {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.stat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  min-width: 80px;
+}
+.stat-label { font-size: 0.72rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-value { font-size: 1.15rem; font-weight: 700; color: #1abc9c; }
+
+/* ── Card grid ── */
+#memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  perspective: 800px;
+}
+
+/* ── Individual card (3-D flip) ── */
+.memory-card {
+  aspect-ratio: 1;
+  cursor: pointer;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease;
+}
+.memory-card.flipped  { transform: rotateY(180deg); }
+.memory-card.matched  { transform: rotateY(180deg); cursor: default; }
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  user-select: none;
+}
+.card-back {
+  background: #1e1e3a;
+  border: 2px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.3);
+  font-size: clamp(1rem, 3vw, 1.5rem);
+}
+.card-front {
+  background: #0f3460;
+  border: 2px solid #1abc9c;
+  transform: rotateY(180deg);
+}
+.memory-card.matched .card-front {
+  background: rgba(26,188,156,0.18);
+  border-color: #32c864;
+  box-shadow: 0 0 12px rgba(50,200,100,0.4);
+}
+
+/* ── Memory messages ── */
+#memory-message {
+  text-align: center;
+  padding: 18px 22px;
+  border-radius: 14px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+#memory-message.win {
+  background: rgba(50,200,100,0.2);
+  border: 1px solid #32c864;
+  color: #7ef7a8;
+}
+
+#btn-new-memory {
+  background: #1abc9c;
+  color: #0e2a25;
+  border: none;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 10px;
+  align-self: center;
+  width: 180px;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+#btn-new-memory:hover  { opacity: 0.88; }
+#btn-new-memory:active { transform: scale(0.96); }
+
+/* ════════════════════════════════════════════════════════════
+   SIMON SAYS
+   ════════════════════════════════════════════════════════════ */
+#app.simon-app { max-width: 440px; }
+
+#simon-level-display {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #aaa;
+  letter-spacing: 1px;
+}
+#simon-level-display #level-num { color: #9b59b6; font-weight: 700; font-size: 1.4rem; }
+
+/* ── 2×2 Simon board ── */
+#simon-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.simon-btn {
+  height: 140px;
+  border: 3px solid rgba(255,255,255,0.15);
+  border-radius: 18px;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.08s, transform 0.08s, box-shadow 0.08s;
+  outline: none;
+}
+.simon-btn[data-color="red"]    { background: #e74c3c; }
+.simon-btn[data-color="green"]  { background: #2ecc71; }
+.simon-btn[data-color="blue"]   { background: #3498db; }
+.simon-btn[data-color="yellow"] { background: #f1c40f; }
+
+.simon-btn:disabled { cursor: not-allowed; }
+
+.simon-btn.active {
+  opacity: 1;
+  transform: scale(1.04);
+  box-shadow: 0 0 32px rgba(255,255,255,0.45);
+  border-color: rgba(255,255,255,0.6);
+}
+
+.simon-btn.wrong {
+  opacity: 0.8;
+  animation: wrong-shake 0.3s ease;
+}
+@keyframes wrong-shake {
+  0%,100% { transform: translateX(0); }
+  25%      { transform: translateX(-6px); }
+  75%      { transform: translateX(6px); }
+}
+
+/* ── Status & message ── */
+#simon-status {
+  text-align: center;
+  min-height: 1.6em;
+  font-size: 0.95rem;
+  color: #bbb;
+}
+
+#simon-message {
+  text-align: center;
+  padding: 16px 20px;
+  border-radius: 14px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+#simon-message.win  { background: rgba(50,200,100,0.2); border: 1px solid #32c864; color: #7ef7a8; }
+#simon-message.lose { background: rgba(220,50,50,0.2);  border: 1px solid #dc3232; color: #ff8888; }
+
+#btn-start-simon {
+  background: #9b59b6;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 10px;
+  align-self: center;
+  width: 180px;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+#btn-start-simon:hover  { opacity: 0.88; }
+#btn-start-simon:active { transform: scale(0.96); }
