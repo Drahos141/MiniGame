@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snake – Mini Games</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="snake-app">
+    <a href="index.html" class="btn-back">← Dashboard</a>
+    <header>
+      <h1>🐍 Snake</h1>
+      <p class="subtitle">Eat apples, grow longer, don't crash!</p>
+    </header>
+    <div id="snake-hud">
+      <div class="stat-box"><span class="stat-label">Score</span><span class="stat-value" id="snake-score">0</span></div>
+      <div class="stat-box"><span class="stat-label">Best</span><span class="stat-value" id="snake-best">0</span></div>
+      <div class="stat-box"><span class="stat-label">Level</span><span class="stat-value" id="snake-level">1</span></div>
+    </div>
+    <canvas id="snake-canvas" width="400" height="400"></canvas>
+    <div id="snake-controls">
+      <p class="control-hint">Arrow keys or WASD to move • Tap canvas on mobile</p>
+      <button id="btn-start-snake">Start Game</button>
+    </div>
+    <div id="snake-message" class="hidden"></div>
+  </div>
+  <script src="snake.js"></script>
+</body>
+</html>

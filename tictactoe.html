@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tic-Tac-Toe – Mini Games</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="ttt-app">
+    <a href="index.html" class="btn-back">← Dashboard</a>
+    <header>
+      <h1>❌ Tic-Tac-Toe</h1>
+      <p class="subtitle">Beat the AI or play with a friend!</p>
+    </header>
+    <div id="ttt-mode">
+      <button class="mode-btn active" id="mode-ai">vs AI</button>
+      <button class="mode-btn" id="mode-2p">2 Players</button>
+    </div>
+    <div id="ttt-status">Your turn (X)</div>
+    <div id="ttt-board"></div>
+    <div id="ttt-score">
+      <div class="score-box"><span class="score-label">X Wins</span><span class="score-val" id="x-wins">0</span></div>
+      <div class="score-box"><span class="score-label">Draws</span><span class="score-val" id="draws">0</span></div>
+      <div class="score-box"><span class="score-label">O Wins</span><span class="score-val" id="o-wins">0</span></div>
+    </div>
+    <button id="btn-new-ttt">New Game</button>
+  </div>
+  <script src="tictactoe.js"></script>
+</body>
+</html>

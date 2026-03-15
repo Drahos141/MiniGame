@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Whack-a-Mole – Mini Games</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="mole-app">
+    <a href="index.html" class="btn-back">← Dashboard</a>
+    <header>
+      <h1>🔨 Whack-a-Mole</h1>
+      <p class="subtitle">Smash moles before they disappear!</p>
+    </header>
+    <div id="mole-stats">
+      <div class="stat-box"><span class="stat-label">Score</span><span class="stat-value" id="mole-score">0</span></div>
+      <div class="stat-box"><span class="stat-label">Missed</span><span class="stat-value" id="mole-misses">0</span></div>
+      <div class="stat-box"><span class="stat-label">Time</span><span class="stat-value" id="mole-time">30</span></div>
+    </div>
+    <div id="mole-grid"></div>
+    <button id="btn-start-mole">Start Game</button>
+    <div id="mole-message" class="hidden"></div>
+  </div>
+  <script src="whackmole.js"></script>
+</body>
+</html>
