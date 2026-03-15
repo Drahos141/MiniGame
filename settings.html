@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings – Fantasy Mini Games</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="settings-app">
+    <a href="index.html" class="btn-back">← Return to Tavern</a>
+    <header>
+      <h1>⚙️ Settings</h1>
+      <p class="subtitle">Configure your adventure</p>
+    </header>
+
+    <div class="settings-section">
+      <h2>👥 Number of Adventurers</h2>
+      <div class="player-select-grid">
+        <button class="player-btn" data-players="1">
+          <span class="player-icon">🧙</span>
+          <span>1 Player</span>
+          <span style="font-family:'Cinzel',serif;font-size:0.65rem;color:var(--parchment-dim)">Solo</span>
+        </button>
+        <button class="player-btn" data-players="2">
+          <span class="player-icon">🧙🧝</span>
+          <span>2 Players</span>
+          <span style="font-family:'Cinzel',serif;font-size:0.65rem;color:var(--parchment-dim)">Duo</span>
+        </button>
+        <button class="player-btn" data-players="3">
+          <span class="player-icon">🧙🧝🛡️</span>
+          <span>3 Players</span>
+          <span style="font-family:'Cinzel',serif;font-size:0.65rem;color:var(--parchment-dim)">Party</span>
+        </button>
+        <button class="player-btn" data-players="4">
+          <span class="player-icon">⚔️🧙🧝🛡️</span>
+          <span>4 Players</span>
+          <span style="font-family:'Cinzel',serif;font-size:0.65rem;color:var(--parchment-dim)">Guild</span>
+        </button>
+      </div>
+      <div class="multiplayer-note">
+        Pass the device between players on their turns. Each player controls their own character when it's their time to act.
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2>🎮 Multiplayer Support</h2>
+      <ul class="game-support-list">
+        <li>🐍 Snake <span class="support-badge support-4p">Up to 4P — Round Robin</span></li>
+        <li>🧠 Memory Match <span class="support-badge support-4p">Up to 4P — Alternating Turns</span></li>
+        <li>❌ Tic-Tac-Toe <span class="support-badge support-2p">2 Players</span></li>
+        <li>🎵 Simon Says <span class="support-badge support-4p">Up to 4P — Pass & Play</span></li>
+        <li>🔐 Mastermind <span class="support-badge support-4p">Up to 4P — Take Turns</span></li>
+        <li>🔨 Whack-a-Mole <span class="support-badge support-4p">Up to 4P — Rounds</span></li>
+        <li>🧩 Puzzle Slider <span class="support-badge support-4p">Up to 4P — Alternating</span></li>
+        <li>📜 Word Scramble <span class="support-badge support-4p">Up to 4P — Alternating</span></li>
+        <li>🎲 Dungeon Dice <span class="support-badge support-4p">Up to 4P — Cooperative</span></li>
+        <li>⚔️ Kingdom Wars <span class="support-badge support-2p">2 Players vs AI or PvP</span></li>
+        <li>⚙️ Physics Lab <span class="support-badge support-1p">Single Player</span></li>
+      </ul>
+    </div>
+
+    <button id="btn-save-settings" class="btn-primary">💾 Save Settings</button>
+    <div id="save-msg" class="hidden" style="text-align:center;margin-top:14px;font-family:'Press Start 2P',monospace;font-size:0.55rem;color:var(--green-light);">
+      ✅ Settings saved!
+    </div>
+  </div>
+
+  <script>
+    const savedPlayers = parseInt(localStorage.getItem('miniGamePlayers') || '1', 10);
+    let selectedPlayers = savedPlayers;
+
+    function updateButtons() {
+      document.querySelectorAll('.player-btn').forEach(btn => {
+        const n = parseInt(btn.dataset.players, 10);
+        btn.classList.toggle('active', n === selectedPlayers);
+      });
+    }
+
+    document.querySelectorAll('.player-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedPlayers = parseInt(btn.dataset.players, 10);
+        updateButtons();
+      });
+    });
+
+    document.getElementById('btn-save-settings').addEventListener('click', () => {
+      localStorage.setItem('miniGamePlayers', selectedPlayers);
+      const msg = document.getElementById('save-msg');
+      msg.classList.remove('hidden');
+      setTimeout(() => msg.classList.add('hidden'), 2000);
+    });
+
+    updateButtons();
+  </script>
+</body>
+</html>

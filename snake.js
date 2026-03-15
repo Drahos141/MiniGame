@@ -3,9 +3,22 @@ const COLS = 20, ROWS = 20;
 const canvas = document.getElementById('snake-canvas');
 const ctx = canvas.getContext('2d');
 
-let snake, dir, nextDir, apple, score, bestScore, level, gameLoop, gameActive;
+// Multiplayer
+const playerCount = parseInt(localStorage.getItem('miniGamePlayers') || '1', 10);
+let mpCurrentPlayer = 0;
+let mpScores = Array(playerCount).fill(0);
 
+let snake, dir, nextDir, apple, score, bestScore, level, gameLoop, gameActive;
 bestScore = 0;
+
+function updatePlayerBanner() {
+  const banner = document.getElementById('snake-player-banner');
+  if (playerCount > 1 && banner) {
+    const icons = ['🟡', '🔵', '🔴', '🟢'];
+    banner.textContent = `${icons[mpCurrentPlayer]} Player ${mpCurrentPlayer + 1}'s Round`;
+    banner.classList.remove('hidden');
+  }
+}
 
 function initSnake() {
   snake = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
@@ -28,6 +41,11 @@ function placeApple() {
 
 function startSnake() {
   document.getElementById('btn-start-snake').textContent = 'Restart';
+  if (playerCount > 1) {
+    mpCurrentPlayer = 0;
+    mpScores = Array(playerCount).fill(0);
+    updatePlayerBanner();
+  }
   clearInterval(gameLoop);
   initSnake();
   gameActive = true;
@@ -61,11 +79,11 @@ function update() {
 }
 
 function draw() {
-  ctx.fillStyle = '#08111e';
+  ctx.fillStyle = '#0a1a08';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Grid dots
-  ctx.fillStyle = 'rgba(255,255,255,0.03)';
+  ctx.fillStyle = 'rgba(255,255,255,0.02)';
   for (let x = 0; x < COLS; x++) for (let y = 0; y < ROWS; y++) {
     ctx.fillRect(x * CELL + CELL/2 - 1, y * CELL + CELL/2 - 1, 2, 2);
   }
@@ -77,6 +95,14 @@ function draw() {
   ctx.fillText('🍎', apple.x * CELL + CELL/2, apple.y * CELL + CELL/2);
 
   // Snake
+  const playerColors = [
+    { head: '#6fee8e', body: '39,174,96' },
+    { head: '#6eb4fe', body: '41,128,185' },
+    { head: '#fe6e6e', body: '192,57,43' },
+    { head: '#fee96e', body: '212,160,23' },
+  ];
+  const pColor = playerColors[mpCurrentPlayer] || playerColors[0];
+
   snake.forEach((seg, i) => {
     const t = i / snake.length;
     const g = ctx.createRadialGradient(
@@ -84,19 +110,18 @@ function draw() {
       seg.x * CELL + CELL/2, seg.y * CELL + CELL/2, CELL/2
     );
     if (i === 0) {
-      g.addColorStop(0, '#6fee8e');
-      g.addColorStop(1, '#27ae60');
+      g.addColorStop(0, pColor.head);
+      g.addColorStop(1, `rgb(${pColor.body})`);
     } else {
       const brightness = 1 - t * 0.4;
-      g.addColorStop(0, `rgba(39,174,96,${brightness})`);
-      g.addColorStop(1, `rgba(20,100,50,${brightness})`);
+      g.addColorStop(0, `rgba(${pColor.body},${brightness})`);
+      g.addColorStop(1, `rgba(${pColor.body.split(',').map((v,i)=>i<2?Math.max(0,parseInt(v)-40):v).join(',')},${brightness})`);
     }
     ctx.fillStyle = g;
     ctx.beginPath();
     ctx.roundRect(seg.x * CELL + 1, seg.y * CELL + 1, CELL - 2, CELL - 2, 4);
     ctx.fill();
 
-    // Eyes on head
     if (i === 0) {
       ctx.fillStyle = '#fff';
       const ex = dir.x !== 0 ? (dir.x > 0 ? 0.6 : 0.2) : 0.3;
@@ -117,12 +142,11 @@ function draw() {
     }
   });
 
-  // Start overlay
   if (!gameActive) {
-    ctx.fillStyle = 'rgba(8,17,30,0.7)';
+    ctx.fillStyle = 'rgba(10,26,8,0.75)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.font = 'bold 18px sans-serif';
+    ctx.fillStyle = 'rgba(212,160,23,0.9)';
+    ctx.font = 'bold 16px Cinzel, serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('Press Start Game', canvas.width/2, canvas.height/2);
@@ -132,10 +156,40 @@ function draw() {
 function endSnake() {
   gameActive = false;
   clearInterval(gameLoop);
-  const msg = document.getElementById('snake-message');
-  msg.classList.remove('hidden');
-  msg.textContent = `💀 Game over! Score: ${score}${score >= bestScore && score > 0 ? ' 🏆 New Best!' : ''}`;
-  document.getElementById('btn-start-snake').textContent = 'Play Again';
+
+  if (playerCount > 1) {
+    mpScores[mpCurrentPlayer] = score;
+    const nextPlayer = mpCurrentPlayer + 1;
+    if (nextPlayer < playerCount) {
+      const msg = document.getElementById('snake-message');
+      msg.classList.remove('hidden');
+      msg.textContent = `💀 P${mpCurrentPlayer + 1} scored ${score}! Pass to P${nextPlayer + 1}…`;
+      mpCurrentPlayer = nextPlayer;
+      updatePlayerBanner();
+      setTimeout(() => {
+        msg.classList.add('hidden');
+        initSnake();
+        gameActive = true;
+        const speed = () => Math.max(80, 200 - (level - 1) * 20);
+        const tick = () => { if (!gameActive) return; update(); draw(); gameLoop = setTimeout(tick, speed()); };
+        gameLoop = setTimeout(tick, speed());
+      }, 2500);
+    } else {
+      // All done
+      let bestIdx = 0;
+      mpScores.forEach((s, i) => { if (s > mpScores[bestIdx]) bestIdx = i; });
+      const msg = document.getElementById('snake-message');
+      msg.classList.remove('hidden');
+      const scoreStr = mpScores.map((s, i) => `P${i+1}:${s}`).join(' | ');
+      msg.textContent = `🏆 Game over! ${scoreStr} — Winner: P${bestIdx + 1}!`;
+      document.getElementById('btn-start-snake').textContent = 'Play Again';
+    }
+  } else {
+    const msg = document.getElementById('snake-message');
+    msg.classList.remove('hidden');
+    msg.textContent = `💀 Game over! Score: ${score}${score >= bestScore && score > 0 ? ' 🏆 New Best!' : ''}`;
+    document.getElementById('btn-start-snake').textContent = 'Play Again';
+  }
   draw();
 }
 
@@ -154,7 +208,6 @@ document.addEventListener('keydown', e => {
 
 document.getElementById('btn-start-snake').addEventListener('click', startSnake);
 
-// Touch swipe support
 let touchStartX = 0, touchStartY = 0;
 canvas.addEventListener('touchstart', e => {
   touchStartX = e.touches[0].clientX;
@@ -174,3 +227,4 @@ canvas.addEventListener('touchend', e => {
 }, { passive: false });
 
 initSnake();
+

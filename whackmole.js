@@ -2,10 +2,27 @@ const MOLE_TYPES = ['🐭','🐹','🦔','🐿️','🦫'];
 const HOLES = 9;
 const GAME_TIME = 30;
 
+// Multiplayer
+const playerCount = parseInt(localStorage.getItem('miniGamePlayers') || '1', 10);
+let mpCurrentPlayer = 0;
+let mpScores = Array(playerCount).fill(0);
+
 let score = 0, misses = 0, timeLeft = GAME_TIME;
 let gameActive = false, timerInterval = null;
 let moleTimers = [];
 let activeMoles = new Array(HOLES).fill(false);
+
+function updatePlayerBanner() {
+  const banner = document.getElementById('mole-player-banner');
+  if (!banner) return;
+  if (playerCount > 1) {
+    const icons = ['🟡', '🔵', '🔴', '🟢'];
+    banner.textContent = `${icons[mpCurrentPlayer]} Player ${mpCurrentPlayer + 1}'s Round`;
+    banner.classList.remove('hidden');
+  } else {
+    banner.classList.add('hidden');
+  }
+}
 
 function buildGrid() {
   const grid = document.getElementById('mole-grid');
@@ -84,11 +101,41 @@ function endGame() {
   moleTimers.forEach(t => clearTimeout(t));
   activeMoles.fill(false);
   document.querySelectorAll('.mole-hole').forEach(h => h.classList.remove('active'));
-  const msg = document.getElementById('mole-message');
-  msg.classList.remove('hidden');
-  let grade = score >= 200 ? '🏆 Amazing!' : score >= 100 ? '👍 Well done!' : '🎯 Keep practicing!';
-  msg.textContent = `Game over! Score: ${score} | Missed: ${misses} — ${grade}`;
+
+  mpScores[mpCurrentPlayer] = score;
+
+  if (playerCount > 1 && mpCurrentPlayer + 1 < playerCount) {
+    const msg = document.getElementById('mole-message');
+    msg.classList.remove('hidden');
+    msg.textContent = `P${mpCurrentPlayer + 1} scored ${score}! Pass to P${mpCurrentPlayer + 2}…`;
+    mpCurrentPlayer++;
+    updatePlayerBanner();
+    setTimeout(() => {
+      msg.classList.add('hidden');
+      startGame();
+    }, 2500);
+  } else {
+    let maxScore = -1, winner = -1;
+    mpScores.forEach((s, i) => { if (s > maxScore) { maxScore = s; winner = i; } });
+    const msg = document.getElementById('mole-message');
+    msg.classList.remove('hidden');
+    if (playerCount === 1) {
+      let grade = score >= 200 ? '🏆 Amazing!' : score >= 100 ? '👍 Well done!' : '🎯 Keep practicing!';
+      msg.textContent = `Game over! Score: ${score} | Missed: ${misses} — ${grade}`;
+    } else {
+      const scoreStr = mpScores.map((s, i) => `P${i+1}:${s}`).join(' | ');
+      msg.textContent = `🏆 All done! ${scoreStr} — Winner: P${winner+1}!`;
+      mpCurrentPlayer = 0;
+    }
+  }
 }
 
-document.getElementById('btn-start-mole').addEventListener('click', startGame);
+document.getElementById('btn-start-mole').addEventListener('click', () => {
+  mpCurrentPlayer = 0;
+  mpScores = Array(playerCount).fill(0);
+  updatePlayerBanner();
+  startGame();
+});
+
 buildGrid();
+updatePlayerBanner();

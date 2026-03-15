@@ -2,6 +2,12 @@ let board = Array(9).fill(null);
 let isXTurn = true, gameOver = false, mode = 'ai';
 let scores = { x: 0, o: 0, draw: 0 };
 
+// Read multiplayer setting (ttt is inherently 2-player; honor setting for default mode)
+const tttPlayerCount = parseInt(localStorage.getItem('miniGamePlayers') || '1', 10);
+if (tttPlayerCount >= 2) {
+  mode = '2p';
+}
+
 const WIN_COMBOS = [
   [0,1,2],[3,4,5],[6,7,8],
   [0,3,6],[1,4,7],[2,5,8],
@@ -118,5 +124,11 @@ document.getElementById('mode-2p').addEventListener('click', () => {
   initGame();
 });
 document.getElementById('btn-new-ttt').addEventListener('click', initGame);
+
+// Apply mode from settings on load
+if (mode === '2p') {
+  document.getElementById('mode-2p').classList.add('active');
+  document.getElementById('mode-ai').classList.remove('active');
+}
 
 initGame();

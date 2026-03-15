@@ -11,11 +11,30 @@ const COLORS = [
 const CODE_LENGTH = 4;
 const MAX_TURNS   = 10;
 
+// Multiplayer
+const playerCount = parseInt(localStorage.getItem('miniGamePlayers') || '1', 10);
+let mpCurrentPlayer = 0;
+let mpTurnsUsed = Array(playerCount).fill(0);
+let mpSolved = Array(playerCount).fill(false);
+let mpActive = Array(playerCount).fill(true);
+
 let secretCode    = [];
 let currentGuess  = Array(CODE_LENGTH).fill(null);
 let selectedColor = null;
 let turnNumber    = 0;
 let gameOver      = false;
+
+function updatePlayerBanner() {
+  const banner = document.getElementById('mm-player-banner');
+  if (!banner) return;
+  if (playerCount > 1) {
+    const icons = ['🟡', '🔵', '🔴', '🟢'];
+    banner.textContent = `${icons[mpCurrentPlayer]} Player ${mpCurrentPlayer + 1}'s Turn`;
+    banner.classList.remove('hidden');
+  } else {
+    banner.classList.add('hidden');
+  }
+}
 
 function initGame() {
   secretCode   = generateCode();
@@ -23,6 +42,10 @@ function initGame() {
   selectedColor = null;
   turnNumber   = 0;
   gameOver     = false;
+  mpCurrentPlayer = 0;
+  mpTurnsUsed = Array(playerCount).fill(0);
+  mpSolved = Array(playerCount).fill(false);
+  mpActive = Array(playerCount).fill(true);
 
   document.getElementById('board').innerHTML = '';
   document.getElementById('message').classList.add('hidden');
@@ -30,6 +53,7 @@ function initGame() {
 
   buildPalette();
   renderCurrentGuess();
+  updatePlayerBanner();
 }
 
 function generateCode() {
@@ -93,14 +117,87 @@ function submitGuess() {
   const feedback = evaluateGuess(secretCode, currentGuess);
   addBoardRow(turnNumber, [...currentGuess], feedback);
   turnNumber++;
+  mpTurnsUsed[mpCurrentPlayer]++;
+
   if (feedback.black === CODE_LENGTH) {
-    endGame(true);
+    mpSolved[mpCurrentPlayer] = true;
+    if (playerCount === 1) {
+      endGame(true);
+    } else {
+      // This player solved it
+      const msg = document.getElementById('message');
+      msg.classList.remove('hidden');
+      msg.textContent = `🎉 P${mpCurrentPlayer + 1} cracked it in ${turnNumber} tries!`;
+      msg.style.color = '#2ecc71';
+      // Check if all players have had a turn
+      mpActive[mpCurrentPlayer] = false;
+      const stillPlaying = mpActive.some(a => a);
+      if (!stillPlaying) {
+        endMultiplayerGame();
+      } else {
+        setTimeout(() => {
+          msg.classList.add('hidden');
+          switchToNextPlayer();
+        }, 1500);
+      }
+    }
   } else if (turnNumber >= MAX_TURNS) {
-    endGame(false);
+    mpActive[mpCurrentPlayer] = false;
+    if (playerCount === 1) {
+      endGame(false);
+    } else {
+      const stillPlaying = mpActive.some(a => a);
+      if (!stillPlaying) {
+        endMultiplayerGame();
+      } else {
+        const msg = document.getElementById('message');
+        msg.classList.remove('hidden');
+        msg.textContent = `😔 P${mpCurrentPlayer + 1} ran out of tries!`;
+        setTimeout(() => {
+          msg.classList.add('hidden');
+          switchToNextPlayer();
+        }, 1500);
+      }
+    }
   } else {
     currentGuess = Array(CODE_LENGTH).fill(null);
     renderCurrentGuess();
     document.getElementById('btn-guess').disabled = true;
+  }
+}
+
+function switchToNextPlayer() {
+  let next = (mpCurrentPlayer + 1) % playerCount;
+  while (!mpActive[next] && next !== mpCurrentPlayer) next = (next + 1) % playerCount;
+  if (!mpActive[next]) { endMultiplayerGame(); return; }
+  mpCurrentPlayer = next;
+  turnNumber = mpTurnsUsed[mpCurrentPlayer];
+  currentGuess = Array(CODE_LENGTH).fill(null);
+  renderCurrentGuess();
+  document.getElementById('btn-guess').disabled = true;
+  updatePlayerBanner();
+  document.getElementById('board').innerHTML = '';
+}
+
+function endMultiplayerGame() {
+  gameOver = true;
+  const solvedPlayers = mpSolved.map((s, i) => s ? i : -1).filter(i => i >= 0);
+  const msg = document.getElementById('message');
+  msg.classList.remove('hidden');
+  if (solvedPlayers.length === 0) {
+    const code = secretCode.map(id => {
+      const c = COLORS.find(c => c.id === id);
+      return `<span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:${c.hex};vertical-align:middle;margin:0 2px;"></span>`;
+    }).join('');
+    msg.innerHTML = `😔 Nobody cracked it! The code was: ${code}`;
+    msg.style.color = '#e74c3c';
+  } else {
+    // Winner = solved with fewest turns
+    let bestTurns = Infinity, winner = -1;
+    solvedPlayers.forEach(i => { if (mpTurnsUsed[i] < bestTurns) { bestTurns = mpTurnsUsed[i]; winner = i; } });
+    const scoreStr = mpTurnsUsed.map((t, i) => `P${i+1}:${mpSolved[i] ? t+'tries' : 'failed'}`).join(' | ');
+    msg.textContent = `🏆 P${winner+1} wins! ${scoreStr}`;
+    msg.style.color = '#2ecc71';
   }
 }
 
@@ -169,3 +266,4 @@ document.getElementById('btn-clear').addEventListener('click', () => {
 document.getElementById('btn-new-game').addEventListener('click', initGame);
 
 initGame();
+
