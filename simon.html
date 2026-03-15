@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simon Says – Logic Game</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="simon-app">
+    <a href="index.html" class="btn-back">← Dashboard</a>
+
+    <header>
+      <h1>🎵 Simon Says</h1>
+      <p class="subtitle">Repeat the growing color sequence!</p>
+    </header>
+
+    <div id="simon-level-display">
+      Level <span id="level-num">—</span>
+    </div>
+
+    <div id="simon-board">
+      <button class="simon-btn" data-color="red"    aria-label="Red"></button>
+      <button class="simon-btn" data-color="green"  aria-label="Green"></button>
+      <button class="simon-btn" data-color="blue"   aria-label="Blue"></button>
+      <button class="simon-btn" data-color="yellow" aria-label="Yellow"></button>
+    </div>
+
+    <div id="simon-status">Press <strong>Start</strong> to begin!</div>
+
+    <button id="btn-start-simon">Start</button>
+
+    <div id="simon-message" class="hidden"></div>
+  </div>
+
+  <script src="simon.js"></script>
+</body>
+</html>

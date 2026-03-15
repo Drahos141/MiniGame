@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Match – Logic Game</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="memory-app">
+    <a href="index.html" class="btn-back">← Dashboard</a>
+
+    <header>
+      <h1>🧠 Memory Match</h1>
+      <p class="subtitle">Flip cards and find all 8 matching pairs!</p>
+    </header>
+
+    <div id="memory-stats">
+      <div class="stat-box">
+        <span class="stat-label">Moves</span>
+        <span class="stat-value" id="move-count">0</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Pairs</span>
+        <span class="stat-value" id="pair-count">0 / 8</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Time</span>
+        <span class="stat-value" id="timer">0:00</span>
+      </div>
+    </div>
+
+    <div id="memory-grid"></div>
+
+    <div id="memory-message" class="hidden"></div>
+
+    <button id="btn-new-memory">New Game</button>
+  </div>
+
+  <script src="memory.js"></script>
+</body>
+</html>
