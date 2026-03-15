@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kingdom Wars – Fantasy Mini Games</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="strategy-app">
+    <a href="index.html" class="btn-back">← Return to Tavern</a>
+
+    <div id="strategy-hud">
+      <span style="font-family:'Press Start 2P',monospace;font-size:0.55rem;color:var(--gold);margin-right:6px;">⚔️ KINGDOM WARS</span>
+      <div class="resource-display"><span class="resource-icon">🪵</span><span class="resource-val" id="res-wood">100</span></div>
+      <div class="resource-display"><span class="resource-icon">⛏️</span><span class="resource-val" id="res-stone">50</span></div>
+      <div class="resource-display"><span class="resource-icon">💰</span><span class="resource-val" id="res-gold">50</span></div>
+      <div class="resource-display"><span class="resource-icon">🍞</span><span class="resource-val" id="res-food">100</span></div>
+      <span id="strategy-turn-info">Turn 1 | Player 1</span>
+      <button id="btn-end-turn" class="btn-primary" style="padding:6px 14px;font-size:0.45rem;">End Turn ⏭️</button>
+    </div>
+
+    <div id="strategy-main">
+      <div id="strategy-map-wrapper">
+        <table id="strategy-map"></table>
+      </div>
+
+      <div id="strategy-panel">
+        <div class="panel-box" id="panel-info">
+          <h3>📍 SELECTED</h3>
+          <div id="panel-info-content" style="font-family:'Cinzel',serif;font-size:0.75rem;color:var(--parchment-dim);line-height:1.7;">
+            Click a tile to select it
+          </div>
+        </div>
+
+        <div class="panel-box" id="panel-build">
+          <h3>🏗️ BUILD</h3>
+          <div id="build-options"></div>
+        </div>
+
+        <div class="panel-box" id="panel-train">
+          <h3>⚔️ TRAIN UNITS</h3>
+          <div id="train-options"></div>
+        </div>
+
+        <div class="panel-box">
+          <h3>📜 WAR LOG</h3>
+          <div id="strategy-log"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="strategy-message" class="hidden" style="margin-top:12px;"></div>
+  </div>
+  <script src="strategy.js"></script>
+</body>
+</html>

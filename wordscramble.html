@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Word Scramble – Fantasy Mini Games</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="wordscramble-app">
+    <a href="index.html" class="btn-back">← Return to Tavern</a>
+    <header>
+      <h1>📜 Word Scramble</h1>
+      <p class="subtitle">Unscramble the ancient spell words!</p>
+    </header>
+
+    <div id="ws-player-banner" class="player-turn-banner hidden"></div>
+
+    <div id="ws-stats">
+      <div class="stat-box"><span class="stat-label">Score</span><span class="stat-value" id="ws-score">0</span></div>
+      <div class="stat-box"><span class="stat-label">Word</span><span class="stat-value" id="ws-word-num">1/10</span></div>
+      <div class="stat-box"><span class="stat-label">Player</span><span class="stat-value" id="ws-player">P1</span></div>
+    </div>
+
+    <div id="ws-word-display">
+      <div class="ws-scrambled" id="ws-scrambled">??????</div>
+      <div class="ws-hint">
+        Hint: <span id="ws-hint-text">—</span>
+        <br>
+        <span class="ws-category" id="ws-category">???</span>
+      </div>
+    </div>
+
+    <div class="ws-timer-bar">
+      <div class="ws-timer-fill" id="ws-timer-fill"></div>
+    </div>
+
+    <div id="ws-input-row">
+      <input type="text" id="ws-input" placeholder="Type your answer…" autocomplete="off" autocorrect="off" spellcheck="false" />
+      <button id="btn-ws-submit" class="btn-primary">Cast ✨</button>
+      <button id="btn-ws-hint">💡 Hint</button>
+    </div>
+
+    <div id="ws-feedback"></div>
+    <div id="ws-message" class="hidden"></div>
+
+    <div style="text-align:center;margin-top:16px;">
+      <button id="btn-ws-new" class="btn-primary">🔀 New Game</button>
+    </div>
+  </div>
+  <script src="wordscramble.js"></script>
+</body>
+</html>

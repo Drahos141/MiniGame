@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dungeon Dice – Fantasy Mini Games</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="dungeon-app">
+    <a href="index.html" class="btn-back">← Return to Tavern</a>
+    <header>
+      <h1>🎲 Dungeon Dice</h1>
+      <p class="subtitle">Roll dice and survive the dungeon!</p>
+    </header>
+
+    <div id="dungeon-player-banner" class="player-turn-banner hidden"></div>
+
+    <div id="dungeon-hud">
+      <div class="stat-box"><span class="stat-label">Your HP</span><span class="stat-value" id="player-hp">20</span></div>
+      <div class="stat-box"><span class="stat-label">Wave</span><span class="stat-value" id="dungeon-wave">1/3</span></div>
+      <div class="stat-box"><span class="stat-label">Player</span><span class="stat-value" id="dungeon-player">P1</span></div>
+    </div>
+
+    <div id="player-hp-bars" style="max-width:400px;margin:0 auto 16px;"></div>
+
+    <div id="dungeon-enemy-area">
+      <div class="enemy-card">
+        <div class="enemy-name" id="enemy-name">Goblin</div>
+        <div class="enemy-emoji" id="enemy-emoji">👺</div>
+        <div class="hp-bar"><div class="hp-fill" id="enemy-hp-fill" style="width:100%"></div></div>
+        <div class="hp-text" id="enemy-hp-text">10 / 10 HP</div>
+      </div>
+    </div>
+
+    <div class="dice-area">
+      <div>
+        <div class="dice" id="attack-die" title="Attack Die">⚔️</div>
+        <div class="dice-label">ATTACK</div>
+      </div>
+      <div>
+        <div class="dice" id="defense-die" title="Defense Die">🛡️</div>
+        <div class="dice-label">DEFENSE</div>
+      </div>
+    </div>
+
+    <div id="dungeon-log"></div>
+    <button id="btn-roll-dice" class="btn-primary">🎲 Roll the Dice!</button>
+    <div id="dungeon-message" class="hidden"></div>
+  </div>
+  <script src="dungeonDice.js"></script>
+</body>
+</html>
