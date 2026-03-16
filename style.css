@@ -414,6 +414,199 @@ button:active { transform: scale(0.96) translateY(1px); }
   border-color: rgba(155,89,182,0.4);
 }
 
+/* ===================== COMPLEX CHALLENGES SECTION ===================== */
+.complex-section {}
+
+.complex-card {
+  background: linear-gradient(160deg, #0a1f1a 0%, #0f2e28 50%, #0a1f1a 100%);
+  border-color: rgba(40,200,140,0.4);
+}
+.complex-card:hover {
+  border-color: rgba(40,200,140,0.75);
+  box-shadow: 5px 8px 0 rgba(0,0,0,0.5), 0 12px 30px rgba(30,180,120,0.25);
+}
+.complex-card .btn-play {
+  background: rgba(40,200,140,0.18);
+  color: #3ef5b0;
+  border-color: rgba(40,200,140,0.4);
+}
+.complex-card .card-title { color: #3ef5b0; }
+
+/* ===================== WARCRAFT REALMS GAME ===================== */
+.wc-app {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 8px 12px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+#wc-hud {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 14px;
+  background: linear-gradient(90deg, rgba(10,20,15,0.95), rgba(20,40,30,0.95));
+  border: 1px solid rgba(40,200,140,0.3);
+  border-radius: 4px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.wc-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  color: #3ef5b0;
+  letter-spacing: 1px;
+  margin-right: 6px;
+}
+
+.wc-resource {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.45rem;
+  color: var(--parchment);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0,0,0,0.3);
+  padding: 4px 10px;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+#wc-main {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+#wc-canvas {
+  border: 2px solid rgba(40,200,140,0.35);
+  border-radius: 4px;
+  display: block;
+  cursor: crosshair;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+}
+
+#wc-panel {
+  width: 210px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wc-panel-box {
+  background: linear-gradient(160deg, rgba(10,20,15,0.9), rgba(15,30,22,0.9));
+  border: 1px solid rgba(40,200,140,0.25);
+  border-radius: 4px;
+  padding: 10px 12px;
+}
+
+.wc-panel-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.38rem;
+  color: #3ef5b0;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(40,200,140,0.2);
+  padding-bottom: 5px;
+}
+
+#wc-info {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  color: var(--parchment-dim);
+  line-height: 1.6;
+}
+#wc-info b { color: var(--parchment); }
+
+#wc-cmds {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.wc-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.38rem;
+  background: linear-gradient(135deg, rgba(40,200,140,0.15), rgba(20,100,70,0.2));
+  color: #3ef5b0;
+  border: 1px solid rgba(40,200,140,0.4);
+  padding: 7px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  text-align: left;
+  line-height: 1.7;
+  transition: background 0.15s, border-color 0.15s;
+}
+.wc-btn:hover {
+  background: linear-gradient(135deg, rgba(40,200,140,0.3), rgba(20,100,70,0.35));
+  border-color: rgba(40,200,140,0.7);
+}
+.wc-btn small {
+  font-size: 0.32rem;
+  color: var(--parchment-dim);
+  display: block;
+  margin-top: 2px;
+}
+
+#wc-log {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.wc-log-entry {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  color: var(--parchment-dim);
+  padding: 2px 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  line-height: 1.4;
+}
+
+#wc-hint {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  color: var(--parchment-dim);
+  text-align: center;
+  padding: 6px 12px;
+  background: rgba(0,0,0,0.25);
+  border-radius: 3px;
+  margin-top: 4px;
+  line-height: 1.6;
+}
+#wc-hint b { color: #3ef5b0; }
+
+#wc-message {
+  text-align: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.6rem;
+  line-height: 1.8;
+  padding: 14px 20px;
+  border-radius: 4px;
+  margin-top: 8px;
+  display: none;
+}
+#wc-message:not(:empty) { display: block; }
+.wc-victory {
+  color: #3ef5b0;
+  background: rgba(10,50,35,0.85);
+  border: 2px solid rgba(40,200,140,0.6);
+}
+.wc-defeat {
+  color: #ff6b6b;
+  background: rgba(50,10,10,0.85);
+  border: 2px solid rgba(200,40,40,0.6);
+}
+
 /* ===================== MASTERMIND ===================== */
 #instructions {
   background: linear-gradient(135deg, rgba(26,18,9,0.7), rgba(45,27,14,0.7));
