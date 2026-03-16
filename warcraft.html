@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Warcraft Realms – Fantasy Mini Games</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="wc-app">
+    <a href="index.html" class="btn-back">← Return to Tavern</a>
+
+    <div id="wc-hud">
+      <span class="wc-title">⚔️ WARCRAFT REALMS</span>
+      <div class="wc-resource" title="Gold">🪙 <span id="wc-gold">200</span></div>
+      <div class="wc-resource" title="Lumber">🌲 <span id="wc-lumber">100</span></div>
+      <div class="wc-resource" title="Food (used / cap)">🍞 <span id="wc-food">0/10</span></div>
+      <div class="wc-resource" title="Game time">⏱️ <span id="wc-time">0:00</span></div>
+      <button id="btn-new-wc" class="btn-primary" style="padding:5px 14px;font-size:0.4rem;margin-left:auto;">New Game</button>
+    </div>
+
+    <div id="wc-main">
+      <canvas id="wc-canvas" width="820" height="520"></canvas>
+
+      <div id="wc-panel">
+        <div class="wc-panel-box" id="wc-info-box">
+          <h3 class="wc-panel-title">📍 SELECTED</h3>
+          <div id="wc-info">Click a unit or building to select it</div>
+        </div>
+
+        <div class="wc-panel-box" id="wc-cmd-box">
+          <h3 class="wc-panel-title">🎯 ACTIONS</h3>
+          <div id="wc-cmds"></div>
+        </div>
+
+        <div class="wc-panel-box" id="wc-log-box">
+          <h3 class="wc-panel-title">📜 WAR LOG</h3>
+          <div id="wc-log"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="wc-hint">
+      <b>Controls:</b> Left-click: Select &nbsp;|&nbsp; Right-click: Command (move/attack/gather) &nbsp;|&nbsp;
+      Drag: Multi-select units &nbsp;|&nbsp; WASD / Arrow keys: Scroll camera &nbsp;|&nbsp;
+      <b>Workers</b> can right-click 💰/🌲 to gather, or use Build buttons to construct
+    </div>
+
+    <div id="wc-message"></div>
+  </div>
+  <script src="warcraft.js"></script>
+</body>
+</html>
