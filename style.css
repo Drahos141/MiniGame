@@ -1054,7 +1054,7 @@ button:active { transform: scale(0.96) translateY(1px); }
 }
 
 /* ===================== POLICE CHASE ===================== */
-.chase-app #app { max-width: 560px; }
+.chase-app #app { max-width: 940px; }
 
 #chase-hud {
   display: flex;
@@ -1095,6 +1095,38 @@ button:active { transform: scale(0.96) translateY(1px); }
   background: rgba(255,80,0,0.1);
   border-color: rgba(255,100,0,0.4);
   color: #ffb060;
+}
+
+.chase-action-btns {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.chase-action-btn {
+  padding: 9px 22px;
+  font-weight: 700;
+  border: 2px solid;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.chase-action-btn:hover { opacity: 0.8; }
+
+.nitro-btn {
+  background: linear-gradient(135deg, #006633, #00cc66);
+  color: #ccffee;
+  border-color: rgba(0,200,100,0.5);
+}
+
+.rocket-btn {
+  background: linear-gradient(135deg, #660000, #cc2200);
+  color: #ffccbb;
+  border-color: rgba(200,50,0,0.5);
 }
 
 /* ===================== WHACK-A-MOLE ===================== */
