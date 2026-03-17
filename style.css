@@ -400,6 +400,7 @@ button:active { transform: scale(0.96) translateY(1px); }
 .chase-card {
   background: linear-gradient(160deg, #1a0a00 0%, #2e1500 50%, #1a0a00 100%);
   border-color: rgba(255,100,0,0.4);
+  padding-top: 0;
 }
 .chase-card:hover {
   border-color: rgba(255,100,0,0.75);
@@ -411,6 +412,14 @@ button:active { transform: scale(0.96) translateY(1px); }
   border-color: rgba(255,100,0,0.4);
 }
 .chase-card .card-title { color: #ffb060; }
+.chase-card-img {
+  width: calc(100% + 32px);
+  margin: 0 -16px;
+  border-radius: 2px 2px 0 0;
+  display: block;
+  max-height: 130px;
+  object-fit: cover;
+}
 
 .physics-card,
 .strategy-card {

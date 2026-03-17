@@ -98,6 +98,11 @@ const MAX_BONUS_ROCKETS        = 4;  // max rockets above car's base count from 
 const MAX_BONUS_SHIELDS        = 2;  // max shields above car's base count from pickups
 const NITRO_FLASH_PERIOD       = 6;  // frames per nitro overlay flash cycle
 const NITRO_FLASH_ON           = 3;  // frames the nitro overlay is visible per cycle
+const POLICE_HP_BY_LEVEL       = [1,1,1,2,2,2,3,3,3,3]; // rockets needed to destroy per level
+const MAX_SPEED_MULTIPLIER     = 1.35; // road speed cap as a multiple of level maxRoadSpeed
+const DIFFICULTY_TIER1_SECONDS = 45;  // seconds until 1 extra police spawns
+const DIFFICULTY_TIER2_SECONDS = 90;  // seconds until 2 extra police spawn
+const BARRIER_LANE_PADDING     = 4;   // px gap between barrier edge and lane edge
 const SHIELD_BLINK_PERIOD      = 8;  // frames per shield-hit blink cycle
 const SHIELD_BLINK_ON          = 4;  // frames car is visible per cycle
 const INVINC_BLINK_PERIOD      = 6;  // frames per invincibility blink cycle
@@ -113,39 +118,61 @@ let lambo, policeList, barriers, rockets, explosions, collectibles;
 let keys, scrollY, score, coins, startTime, gameActive, gameLoop, frameCount;
 let nitroActive, nitroFramesLeft, nitroCooldownLeft;
 let barrierTimer, coinTimer;
+let difficultyPoliceAdded; // track extra police added by dynamic difficulty
 
 // ── Road speed (px/frame) ──
 function roadSpeed() {
   if (!startTime) return LEVEL_DEFS[selectedLevel].baseRoadSpeed;
   const def     = LEVEL_DEFS[selectedLevel];
   const elapsed = (Date.now() - startTime) / 1000;
-  return Math.min(def.baseRoadSpeed + elapsed * 0.045, def.maxRoadSpeed);
+  // Difficulty ramps faster over time: steeper curve after 60s
+  const ramp = elapsed < 60
+    ? elapsed * 0.045
+    : 60 * 0.045 + (elapsed - 60) * 0.08;
+  return Math.min(def.baseRoadSpeed + ramp, def.maxRoadSpeed * MAX_SPEED_MULTIPLIER);
+}
+
+// ── Police HP for current level ──
+function policeHp() {
+  return POLICE_HP_BY_LEVEL[selectedLevel] || 1;
+}
+
+// ── Spawn a single new police car at top of screen ──
+function spawnPolice(stagger) {
+  return {
+    x: ROAD_X + Math.random() * (ROAD_W - CAR_W),
+    y: -CAR_H - (stagger || 0),
+    stunFrames: 0,
+    hp: policeHp(),
+  };
 }
 
 // ── Init game ──
 function initGame() {
   const def = CAR_DEFS[selectedCar];
-  scrollY           = 0;
-  score             = 0;
-  coins             = 0;
-  frameCount        = 0;
-  barrierTimer      = 0;
-  coinTimer         = 0;
-  barriers          = [];
-  rockets           = [];
-  explosions        = [];
-  collectibles      = [];
-  nitroActive       = false;
-  nitroFramesLeft   = 0;
-  nitroCooldownLeft = 0;
-  keys              = {};
-  gameActive        = false;
-  startTime         = null;
+  scrollY               = 0;
+  score                 = 0;
+  coins                 = 0;
+  frameCount            = 0;
+  barrierTimer          = 0;
+  coinTimer             = 0;
+  barriers              = [];
+  rockets               = [];
+  explosions            = [];
+  collectibles          = [];
+  nitroActive           = false;
+  nitroFramesLeft       = 0;
+  nitroCooldownLeft     = 0;
+  keys                  = {};
+  gameActive            = false;
+  startTime             = null;
+  difficultyPoliceAdded = 0;
 
   lambo = {
     x: W / 2 - CAR_W / 2,
     y: H * 0.72,
     vx: 0,
+    vy: 0,
     def,
     rockets: def.rocketCount,
     shield:  def.shieldCount,
@@ -157,8 +184,9 @@ function initGame() {
   for (let i = 0; i < lvl.numPolice; i++) {
     policeList.push({
       x: ROAD_X + (i + 1) * ROAD_W / (lvl.numPolice + 1) - CAR_W / 2,
-      y: H * 0.08 + i * 90,
+      y: -CAR_H - i * 140,
       stunFrames: 0,
+      hp: policeHp(),
     });
   }
 
@@ -212,33 +240,56 @@ function update() {
   // Road scroll
   scrollY = (scrollY + spd) % (STRIPE_H + STRIPE_GAP);
 
-  // ── Player control (left/right only) ──
+  // ── Player control (left/right/up/down) ──
   const def      = lambo.def;
   const maxV     = def.maxV + (nitroActive ? def.nitroPower : 0);
+  const maxVY    = def.maxV * 0.65 + (nitroActive ? def.nitroPower * 0.4 : 0);
   const accel    = def.accel;
   const friction = 0.82;
 
   if (keys['ArrowLeft']  || keys['a']) lambo.vx -= accel;
   if (keys['ArrowRight'] || keys['d']) lambo.vx += accel;
+  if (keys['ArrowUp']    || keys['w']) lambo.vy -= accel;
+  if (keys['ArrowDown']  || keys['s']) lambo.vy += accel;
 
-  lambo.vx  = Math.max(-maxV, Math.min(maxV, lambo.vx)) * friction;
+  lambo.vx  = Math.max(-maxV,  Math.min(maxV,  lambo.vx)) * friction;
+  lambo.vy  = Math.max(-maxVY, Math.min(maxVY, lambo.vy)) * friction;
   lambo.x  += lambo.vx;
+  lambo.y  += lambo.vy;
   lambo.x   = Math.max(ROAD_X + 4, Math.min(ROAD_X + ROAD_W - CAR_W - 4, lambo.x));
+  lambo.y   = Math.max(H * 0.08, Math.min(H * 0.90, lambo.y));
 
   if (lambo.invincFrames > 0) lambo.invincFrames--;
 
-  // ── Police AI: only moves left/right (no vertical pursuit) ──
-  const lvl     = LEVEL_DEFS[selectedLevel];
+  // ── Dynamic difficulty: add extra police over time ──
   const elapsed = (Date.now() - startTime) / 1000;
+  const extraTarget = elapsed > DIFFICULTY_TIER2_SECONDS ? 2 : elapsed > DIFFICULTY_TIER1_SECONDS ? 1 : 0;
+  while (difficultyPoliceAdded < extraTarget && policeList.length < 5) {
+    policeList.push(spawnPolice(0));
+    difficultyPoliceAdded++;
+  }
+
+  // ── Police AI: move down screen and chase player ──
+  const lvl     = LEVEL_DEFS[selectedLevel];
   policeList.forEach(p => {
     if (p.stunFrames > 0) { p.stunFrames--; return; }
     const pSpd = Math.min(lvl.policeBaseSpeed + elapsed * 0.025, lvl.policeMaxSpeed);
-    const dx   = lambo.x - p.x;
-    p.x += Math.sign(dx) * Math.min(Math.abs(dx) * 0.15, pSpd);
+
+    // Chase player x
+    const dx = lambo.x - p.x;
+    p.x += Math.sign(dx) * Math.min(Math.abs(dx) * 0.12, pSpd);
     p.x  = Math.max(ROAD_X + 4, Math.min(ROAD_X + ROAD_W - CAR_W - 4, p.x));
-    // Gentle downward drift with road; wraps back to top to stay visible
-    p.y += spd * 0.1;
-    if (p.y > H * 0.35) p.y = H * 0.06;
+
+    // Move DOWN the screen: road scroll + own chase speed toward player Y
+    const dy = lambo.y - p.y;
+    // Move at road scroll + pursuitSpeed; also slightly converge on player y
+    p.y += spd + pSpd * 0.6 + Math.sign(dy) * Math.min(Math.abs(dy) * 0.04, pSpd * 0.4);
+
+    // When police exits bottom of screen, respawn at top
+    if (p.y > H + CAR_H) {
+      p.y = -CAR_H;
+      p.x = ROAD_X + Math.random() * (ROAD_W - CAR_W);
+    }
   });
 
   // ── Spawn / scroll barriers ──
@@ -280,14 +331,28 @@ function update() {
   // ── Rocket vs Police ──
   for (let ri = rockets.length - 1; ri >= 0; ri--) {
     const r = rockets[ri];
-    for (const p of policeList) {
+    let hit = false;
+    for (let pi = policeList.length - 1; pi >= 0; pi--) {
+      const p = policeList[pi];
       if (rectsOverlap(r.x, r.y, BULLET_W, BULLET_H, p.x, p.y, CAR_W, CAR_H)) {
-        spawnExplosion(p.x + CAR_W / 2, p.y + CAR_H / 2, '#0044ff');
-        p.stunFrames = 180;
-        rockets.splice(ri, 1);
+        p.hp--;
+        if (p.hp <= 0) {
+          spawnExplosion(p.x + CAR_W / 2, p.y + CAR_H / 2, '#0044ff');
+          spawnExplosion(p.x + CAR_W / 2, p.y + CAR_H / 2, '#ffffff');
+          // Destroy police car — respawn at top after stun delay
+          p.y = -CAR_H;
+          p.x = ROAD_X + Math.random() * (ROAD_W - CAR_W);
+          p.hp = policeHp();
+          p.stunFrames = 300;
+        } else {
+          spawnExplosion(p.x + CAR_W / 2, p.y + CAR_H / 2, '#ff8800');
+          p.stunFrames = 60;
+        }
+        hit = true;
         break;
       }
     }
+    if (hit) rockets.splice(ri, 1);
   }
 
   // ── Update explosion particles ──
@@ -369,15 +434,17 @@ function spawnBarrier() {
   }
   const lvl      = LEVEL_DEFS[selectedLevel];
   const maxBlock = lvl.numPolice >= 3 ? 3 : lvl.numPolice >= 2 ? 2 : 1;
+  // Always leave at least 2 lanes open so the player can dodge
   const blocked  = Math.min(LANE_COUNT - 2, Math.floor(Math.random() * maxBlock) + 1);
   const types    = ['barrier', 'oil', 'spike'];
   const type     = types[Math.floor(Math.random() * types.length)];
   for (let i = 0; i < blocked; i++) {
     const lane = lanes[i];
     barriers.push({
-      x: ROAD_X + lane * LANE_W + LANE_W / 2 - 20,
+      x: ROAD_X + lane * LANE_W + BARRIER_LANE_PADDING,
       y: -70,
-      w: 40, h: 22,
+      w: LANE_W - BARRIER_LANE_PADDING * 2,  // span full lane width so player must actually move lanes to dodge
+      h: 22,
       type,
     });
   }
@@ -598,9 +665,9 @@ function drawHUD() {
   ctx.fillText('🚀 ' + lambo.rockets, hx, hy - 18);
   ctx.fillText('🛡 ' + lambo.shield,  hx + 70, hy - 18);
 
-  // Level indicator
+  // Level indicator (with live police count)
   ctx.textAlign = 'right';
-  ctx.fillText('LVL ' + (selectedLevel + 1) + ' — ' + LEVEL_NAMES[selectedLevel],
+  ctx.fillText('🚔×' + policeList.length + '  LVL ' + (selectedLevel + 1) + ' — ' + LEVEL_NAMES[selectedLevel],
                ROAD_X + ROAD_W - 8, hy - 18);
 
   // Nitro flash overlay
@@ -728,6 +795,20 @@ function drawPoliceAt(p) {
   ctx.textAlign    = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('POLICE', 0, ch / 2 - 24);
+
+  // HP health bar above police car
+  const maxHp  = policeHp();
+  const barW   = cw + 4;
+  const barH   = 4;
+  const barY   = -ch / 2 - 8;
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = '#440000';
+  ctx.fillRect(-barW / 2, barY, barW, barH);
+  ctx.fillStyle = p.hp >= maxHp ? '#00ff44' : p.hp > 1 ? '#ffaa00' : '#ff2200';
+  ctx.fillRect(-barW / 2, barY, barW * (p.hp / maxHp), barH);
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 0.5;
+  ctx.strokeRect(-barW / 2, barY, barW, barH);
 
   ctx.restore();
   ctx.globalAlpha = 1;
@@ -1023,16 +1104,21 @@ canvas.addEventListener('click', function(e) {
 
 // ── Touch controls ──
 let touchStartX = 0;
+let touchStartY = 0;
 canvas.addEventListener('touchstart', function(e) {
   touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
   e.preventDefault();
 }, { passive: false });
 
 canvas.addEventListener('touchmove', function(e) {
   if (!gameActive) return;
   const dx = e.touches[0].clientX - touchStartX;
+  const dy = e.touches[0].clientY - touchStartY;
   keys['ArrowLeft']  = dx < -15;
   keys['ArrowRight'] = dx > 15;
+  keys['ArrowUp']    = dy < -15;
+  keys['ArrowDown']  = dy > 15;
   e.preventDefault();
 }, { passive: false });
 
@@ -1040,7 +1126,7 @@ canvas.addEventListener('touchend', function(e) {
   const rect = canvas.getBoundingClientRect();
   const ty   = e.changedTouches[0].clientY - rect.top;
   if (ty < rect.height * 0.3) fireRocket();
-  keys['ArrowLeft'] = keys['ArrowRight'] = false;
+  keys['ArrowLeft'] = keys['ArrowRight'] = keys['ArrowUp'] = keys['ArrowDown'] = false;
 });
 
 // ── Boot ──
