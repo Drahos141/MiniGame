@@ -11,18 +11,25 @@
     <a href="index.html" class="btn-back">← Dashboard</a>
     <header>
       <h1>🚔 Police Chase</h1>
-      <p class="subtitle">Outrun the cops in your Lamborghini!</p>
+      <p class="subtitle">Outrun the cops — use Nitro &amp; Rockets to survive!</p>
     </header>
     <div id="chase-player-banner" class="player-turn-banner hidden"></div>
     <div id="chase-hud">
       <div class="stat-box"><span class="stat-label">Time</span><span class="stat-value" id="chase-time">0</span></div>
       <div class="stat-box"><span class="stat-label">Best</span><span class="stat-value" id="chase-best">0</span></div>
       <div class="stat-box"><span class="stat-label">Speed</span><span class="stat-value" id="chase-speed">0</span></div>
+      <div class="stat-box"><span class="stat-label">Coins</span><span class="stat-value" id="chase-coins">0</span></div>
     </div>
-    <canvas id="chase-canvas" width="500" height="500"></canvas>
+    <canvas id="chase-canvas" width="900" height="900"></canvas>
     <div id="chase-controls">
-      <p class="control-hint">Arrow keys or WASD to steer • Avoid the police!</p>
-      <button id="btn-start-chase">Start Game</button>
+      <p class="control-hint">
+        ← → / A D — Steer &nbsp;|&nbsp; <kbd>Space</kbd> — Nitro &nbsp;|&nbsp; <kbd>F</kbd> / <kbd>Enter</kbd> — Fire Rocket
+      </p>
+      <div class="chase-action-btns">
+        <button id="btn-nitro-chase" class="chase-action-btn nitro-btn">⚡ Nitro</button>
+        <button id="btn-start-chase">Start Game</button>
+        <button id="btn-rocket-chase" class="chase-action-btn rocket-btn">🚀 Rocket</button>
+      </div>
     </div>
     <div id="chase-message" class="hidden"></div>
   </div>
