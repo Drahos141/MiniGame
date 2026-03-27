@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>⚔️ Fantasy Mini Games</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
 </head>
 <body>
   <div id="app" class="dashboard">
@@ -141,6 +142,64 @@
       </span>
     </div>
   </div>
+
+  <script>
+    // Records section
+    (function() {
+      const records = [
+        { key: 'snakeBest',         label: '🐍 Snake',         unit: 'pts' },
+        { key: 'moleBest',          label: '🔨 Whack-a-Mole',  unit: 'pts' },
+        { key: 'simonBest',         label: '🎵 Simon Says',     unit: 'lv'  },
+        { key: 'wordscrambleBest',  label: '📜 Word Scramble',  unit: 'pts' },
+        { key: 'chaseBest',         label: '🚔 Police Chase',   unit: 's'   },
+      ];
+
+      const items = records
+        .map(r => ({ ...r, val: parseInt(localStorage.getItem(r.key) || '0', 10) }))
+        .filter(r => r.val > 0);
+
+      if (items.length === 0) return;
+
+      const section = document.createElement('div');
+      section.className = 'records-section';
+      section.innerHTML = `
+        <hr class="section-divider" />
+        <p class="section-label">🏆 Your Records</p>
+        <div class="records-grid" id="records-grid"></div>
+      `;
+      document.getElementById('app').insertBefore(section, document.querySelector('[style*="margin-top: 24px"]'));
+
+      const grid = section.querySelector('#records-grid');
+      items.forEach(r => {
+        const card = document.createElement('div');
+        card.className = 'record-card';
+        card.innerHTML = `<span class="record-label">${r.label}</span><span class="record-value">${r.val}<span class="record-unit"> ${r.unit}</span></span>`;
+        grid.appendChild(card);
+      });
+    })();
+
+    // Track recently played: each game page should call this on load
+    // Mark game cards with a "played" badge if they have a record
+    (function() {
+      const gameRecordMap = {
+        'snake.html':        'snakeBest',
+        'whackmole.html':    'moleBest',
+        'simon.html':        'simonBest',
+        'wordscramble.html': 'wordscrambleBest',
+        'chase.html':        'chaseBest',
+      };
+      document.querySelectorAll('.game-card').forEach(card => {
+        const href = card.getAttribute('href');
+        const key = gameRecordMap[href];
+        if (key && parseInt(localStorage.getItem(key) || '0', 10) > 0) {
+          const badge = document.createElement('div');
+          badge.className = 'played-badge';
+          badge.textContent = '✓ Played';
+          card.appendChild(badge);
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
 

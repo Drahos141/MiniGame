@@ -9,7 +9,7 @@ let mpCurrentPlayer = 0;
 let mpScores = Array(playerCount).fill(0);
 
 let snake, dir, nextDir, apple, score, bestScore, level, gameLoop, gameActive;
-bestScore = 0;
+bestScore = parseInt(localStorage.getItem('snakeBest') || '0', 10);
 
 function updatePlayerBanner() {
   const banner = document.getElementById('snake-player-banner');
@@ -27,6 +27,7 @@ function initSnake() {
   score = 0; level = 1; gameActive = false;
   placeApple();
   document.getElementById('snake-score').textContent = '0';
+  document.getElementById('snake-best').textContent = bestScore;
   document.getElementById('snake-level').textContent = '1';
   document.getElementById('snake-message').classList.add('hidden');
   clearInterval(gameLoop);
@@ -67,7 +68,10 @@ function update() {
   snake.unshift(head);
   if (head.x === apple.x && head.y === apple.y) {
     score += 10 * level;
-    if (score > bestScore) bestScore = score;
+    if (score > bestScore) {
+      bestScore = score;
+      localStorage.setItem('snakeBest', bestScore);
+    }
     level = Math.floor(score / 100) + 1;
     document.getElementById('snake-score').textContent = score;
     document.getElementById('snake-best').textContent = bestScore;

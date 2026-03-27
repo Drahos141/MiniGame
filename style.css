@@ -1969,3 +1969,57 @@ button:active { transform: scale(0.96) translateY(1px); }
   #memory-grid { grid-template-columns: repeat(4, 1fr); gap: 5px; max-width: 260px; }
 }
 
+/* ===================== RECORDS SECTION ===================== */
+.records-section { margin-top: 8px; }
+
+.records-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.record-card {
+  background: linear-gradient(135deg, rgba(26,18,9,0.8), rgba(45,27,14,0.9));
+  border: 2px solid rgba(212,160,23,0.35);
+  border-radius: 4px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+}
+
+.record-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: var(--parchment-dim);
+}
+
+.record-value {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1rem;
+  color: var(--gold);
+  text-shadow: 0 0 10px rgba(212,160,23,0.4);
+}
+
+.record-unit {
+  font-size: 0.5rem;
+  color: var(--parchment-dim);
+}
+
+/* ===================== PLAYED BADGE ===================== */
+.played-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.38rem;
+  color: var(--green-light);
+  background: rgba(39,174,96,0.15);
+  border: 1px solid rgba(90,158,58,0.5);
+  border-radius: 3px;
+  padding: 3px 6px;
+  letter-spacing: 0.5px;
+}
+

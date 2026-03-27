@@ -1,3 +1,30 @@
+// Sound utility (Web Audio API)
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+
+function isSoundEnabled() {
+  return localStorage.getItem('miniGameSound') !== '0';
+}
+
+function playTone(freq, duration = 0.15, type = 'sine') {
+  if (!isSoundEnabled()) return;
+  try {
+    if (!audioCtx) audioCtx = new AudioCtx();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + duration);
+  } catch (e) { /* audio not available */ }
+}
+
+const SIMON_TONES = { red: 261.6, green: 329.6, blue: 392, yellow: 523.3 };
+
 const SIMON_COLORS = ['red', 'green', 'blue', 'yellow'];
 
 // Multiplayer
@@ -6,6 +33,7 @@ let mpCurrentPlayer = 0;
 let mpEliminated = Array(playerCount).fill(false);
 
 let sequence = [], playerIndex = 0, level = 0;
+let bestLevel = parseInt(localStorage.getItem('simonBest') || '0', 10);
 let isShowingSeq = false, gameActive = false, flashSpeed = 700;
 
 function updatePlayerBanner() {
@@ -68,6 +96,7 @@ function showSequence() {
 function flashButton(color) {
   const btn = document.querySelector(`.simon-btn[data-color="${color}"]`);
   btn.classList.add('active');
+  playTone(SIMON_TONES[color] || 440, flashSpeed / 1000 * 0.8);
   setTimeout(() => btn.classList.remove('active'), flashSpeed);
 }
 
@@ -109,6 +138,10 @@ document.querySelectorAll('.simon-btn').forEach(btn => {
         document.getElementById('simon-status').textContent = '❌ Wrong!';
         const msg = document.getElementById('simon-message');
         msg.classList.remove('hidden');
+        if (level > bestLevel) {
+          bestLevel = level;
+          localStorage.setItem('simonBest', bestLevel);
+        }
         let feedback = level >= 10 ? '🏆 Impressive!' : level >= 5 ? '👍 Not bad!' : 'Keep practicing!';
         msg.textContent = `Game over at level ${level}. ${feedback}`;
       }

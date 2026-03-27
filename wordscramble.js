@@ -50,6 +50,7 @@ let timeLeft = WORD_TIME;
 let timerInterval = null;
 let hintUsed = false;
 let gameActive = false;
+let bestScore = parseInt(localStorage.getItem('wordscrambleBest') || '0', 10);
 
 function scrambleWord(word) {
   const arr = word.split('');
@@ -208,6 +209,10 @@ function endGame() {
   msg.classList.remove('hidden');
 
   if (playerCount === 1) {
+    if (playerScores[0] > bestScore) {
+      bestScore = playerScores[0];
+      localStorage.setItem('wordscrambleBest', bestScore);
+    }
     msg.textContent = `🏆 Quest Complete! Final Score: ${playerScores[0]} pts`;
   } else {
     let maxScore = -1, winner = -1;

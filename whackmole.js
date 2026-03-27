@@ -1,3 +1,28 @@
+// Sound utility (Web Audio API)
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+
+function isSoundEnabled() {
+  return localStorage.getItem('miniGameSound') !== '0';
+}
+
+function playTone(freq, duration = 0.12, type = 'square') {
+  if (!isSoundEnabled()) return;
+  try {
+    if (!audioCtx) audioCtx = new AudioCtx();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + duration);
+  } catch (e) { /* audio not available */ }
+}
+
 const MOLE_TYPES = ['🐭','🐹','🦔','🐿️','🦫'];
 const HOLES = 9;
 const GAME_TIME = 30;
@@ -8,6 +33,7 @@ let mpCurrentPlayer = 0;
 let mpScores = Array(playerCount).fill(0);
 
 let score = 0, misses = 0, timeLeft = GAME_TIME;
+let bestScore = parseInt(localStorage.getItem('moleBest') || '0', 10);
 let gameActive = false, timerInterval = null;
 let moleTimers = [];
 let activeMoles = new Array(HOLES).fill(false);
@@ -46,6 +72,7 @@ function whack(idx) {
   hole.classList.remove('active');
   hole.classList.add('whacked');
   score += 10;
+  playTone(600, 0.1, 'square');
   document.getElementById('mole-score').textContent = score;
   setTimeout(() => hole.classList.remove('whacked'), 400);
 }
@@ -120,6 +147,10 @@ function endGame() {
     const msg = document.getElementById('mole-message');
     msg.classList.remove('hidden');
     if (playerCount === 1) {
+      if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem('moleBest', bestScore);
+      }
       let grade = score >= 200 ? '🏆 Amazing!' : score >= 100 ? '👍 Well done!' : '🎯 Keep practicing!';
       msg.textContent = `Game over! Score: ${score} | Missed: ${misses} — ${grade}`;
     } else {
