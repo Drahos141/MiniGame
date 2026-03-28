@@ -2023,3 +2023,25 @@ button:active { transform: scale(0.96) translateY(1px); }
   letter-spacing: 0.5px;
 }
 
+
+
+/* ===================== CRYPTO DASHBOARD CARD ===================== */
+.crypto-dash-card {
+  background: linear-gradient(135deg, #04080f 0%, #0a1a2e 50%, #060d1a 100%);
+  border: 2px solid rgba(0, 200, 255, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+.crypto-dash-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 80% 20%, rgba(0,200,255,0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+.crypto-dash-card .card-icon { text-shadow: 0 0 16px rgba(0,200,255,0.6); }
+.crypto-dash-card .card-title { color: #00e8ff; font-family: 'Courier New', monospace; letter-spacing: 1px; }
+.crypto-dash-card .card-desc  { color: rgba(180,210,255,0.7); font-family: 'Cinzel', serif; }
+.crypto-dash-card .btn-play   { color: #00e8ff; border-color: rgba(0,200,255,0.4); }
+.crypto-dash-card:hover { border-color: #00e8ff; box-shadow: 0 0 24px rgba(0,200,255,0.2), 0 8px 32px rgba(0,0,0,0.6); }
+.crypto-dash-card:hover .btn-play { background: rgba(0,200,255,0.1); }
